@@ -1,0 +1,44 @@
+【echo】
+
+Echo the STRING(s) to standard output.
+
+
+       -n     do not output the trailing newline
+              输出文字不换行
+       -e     enable interpretation of backslash escapes
+               将转义符跟后边的特殊字符解释成特殊意义
+       -E     disable interpretation of backslash escapes
+              (default)
+                不解释转义字符  
+       --help display this help and exit
+              帮助
+       --version	output version information and exit
+          				显示版本等信息
+       If -e is in effect, the  following  sequences  are	recognized:   
+       
+       当用-e时特殊字符的效果如下
+       \\     backslash
+             显示\
+       \a     alert (BEL)
+            发出警报声
+       \b     backspace
+           删除前一个字符
+       \c     produce no further output
+            最后不加上换行符号
+       \e     escape
+           字符向前退一位     
+       \f     form feed
+          换行但光标仍停留在原来的位置
+       \n     new line
+         换行
+       \r     carriage return
+         光标移至行首但不换行
+       \t     horizontal tab
+         插入TAB
+       \v     vertical tab
+          换行但光标仍停留在原来的位置
+       \0NNN  byte with octal value NNN (1 to 3 digits)
+         八进制代表的ASCII字节
+       \xHH   byte with hexadecimal value HH (1 to 2 dig-
+              its)
+         十六进制代表的ASCII字节

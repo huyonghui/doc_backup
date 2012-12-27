@@ -8,7 +8,7 @@ git config --global user.email huyonghui@cgmobile.com.cn
 git config --global core.autocrlf false
 
 3 添加文件到仓库
-git add  files
+git add files
 
 4 提交文件到仓库
 git commit -m "1st commit."
@@ -41,9 +41,6 @@ git archive
 14 git show 
 
 15 git hash-object
-
-
-
 
 将新增加文件加入到git中:
 

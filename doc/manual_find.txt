@@ -1,0 +1,35 @@
+【find 】
+
+·find    path    -option    [-print]    [-exec -ok command] {} \;
+#-print 将查找到的文件输出到标准输出
+#-exec    command    {} \;       -----将查到的文件执行command操作,{} 和 \;之间有空格
+#-ok 和-exec相同，只不过在操作前要询用户 
+
+
+find [path] [option]
+-name 名字
+-type 文件类型 d:文件夹 f:普通文件 l:链接文件
+-print find命令将匹配的文件输出到标准输出
+-perm 按照文件权限来查找文件 
+-exec 选项后面跟随着所要执行的命令， 然后是一对 {}， 一个空格和一个 \，最后是一个分号。
+
+find . -type f -name "*.txt" -exec grep -in --color=auto "egrep\b" {} \; -print
+find . -type d -name "other" -exec rm -rf {} \;
+find . -type d -name "other" -ok rm -rf {} \;
+find . -type f -exec ls -l {} \; 
+find . -size +3000k -exec ls -ld {} \; //比如要查找磁盘中大于3M的文件：
+find . -size +30k -exec cp {} ~ \;	//找到文件并copy文件到指定目录
+find . -mtime -2  //查最近两天内改动过的文件
+find . -empty //空白文件、空白文件夹、没有子目录的文件夹
+find . -name access_log 2>/dev/null //无错误查找
+find . -mindepth 3 -maxdepth 5 -type d 
+find . -fstype ext2
+find . -type f ! -ftype vfat
+find . -type f ! -name "strings.xml"
+find . -false 查找系统中总是错误的文件
+find . -gid n 组id为n的文件
+find . -group gname 组名为gname的文件
+find . -depth 在某层指定目录中优先查找文件内容
+find . -maxdepth levels 在某个层次目录中按递减方式查找
+find . -perm 0755
+find . -path ./study/.git -prune -o -type f -print //排除查找目录

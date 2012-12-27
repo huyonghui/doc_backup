@@ -1,23 +1,4 @@
-find:
-find [path] [option]
--name 名字
--type 文件类型 d:文件夹 f:普通文件 l:链接文件
--print find命令将匹配的文件输出到标准输出
--perm 按照文件权限来查找文件 
--exec 选项后面跟随着所要执行的命令， 然后是一对 {}， 一个空格和一个 \，最后是一个分号。
-
-遍历当前文件夹搜索contactsList字串
-grep -rn contactsList . 
-1 遍历当前文件夹 找到名字为AndroidManifest.xml的文件 
-2 以每次10个文件的数量来查找有"action\.SEND"行的文件
-3 -l 仅显示文件名 
-grep -iln "action\.SEND" $(find . -type f -name AndroidManifest.xml )
-find . -type f -name AndroidManifest.xml | xargs grep -iln "action\.SEND"
-find . -type f -name AndroidManifest.xml -exec grep -iln "action\.send" {} \;
-find . -type f -name AndroidManifest.xml | xargs -n 10 grep -iln "action\.SEND"
-
-
-grep 
+【grep 】
 
 特殊符号	代表意义
 [:alnum:]	代表英文大小写字节及数字，亦即 0-9, A-Z, a-z
@@ -138,6 +119,16 @@ egrep -n 'g(la|oo)d' regular_express.txt
 echo 'AxyzxyzxyzxyzC' | egrep 'A(xyz)+C'
 上面的例子意思是说，我要找开头是 A 结尾是 C ，中间有一个以上的 "xyz" 字串的意思～
 
+
+遍历当前文件夹搜索contactsList字串
+grep -rn contactsList . 
+1 遍历当前文件夹 找到名字为AndroidManifest.xml的文件 
+2 以每次10个文件的数量来查找有"action\.SEND"行的文件
+3 -l 仅显示文件名 
+grep -iln "action\.SEND" $(find . -type f -name AndroidManifest.xml )
+find . -type f -name AndroidManifest.xml | xargs grep -iln "action\.SEND"
+find . -type f -name AndroidManifest.xml -exec grep -iln "action\.send" {} \;
+find . -type f -name AndroidManifest.xml | xargs -n 10 grep -iln "action\.SEND"
 
 查找文件 
 ls -a .|grep -E ".classpath|.project"|awk '{print "mv "$1" ~" }'|sh \\or
