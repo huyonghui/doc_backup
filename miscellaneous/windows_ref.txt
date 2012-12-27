@@ -1,0 +1,4 @@
+小知识：
+set curdir=%CD% 设置变量
+explorer %CD% 打开当前文件夹
+cd /d %USERPROFILE% 切换到用户目录

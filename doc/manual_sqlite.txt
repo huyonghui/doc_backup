@@ -1,0 +1,27 @@
+http://blog.pfan.cn/lounger/26540.html
+.database 显示数据库信息；
+.tables 显示表名称；（好像.table也可以）
+.schema 命令可以查看创建数据表时的SQL命令；
+.schema table_name 查看创建表table_name时的SQL的命令；
+
+.databases               列出数据库文件名
+.tables ?PATTERN?        列出?PATTERN?匹配的表名
+.import FILE TABLE       将文件中的数据导入的文件中
+.dump ?TABLE?            生成形成数据库表的SQL脚本
+.output FILENAME         将输出导入到指定的文件中
+.output stdout           将输出打印到屏幕
+.mode MODE ?TABLE?       设置数据输出模式(csv,html,tcl…
+.nullvalue STRING        用指定的串代替输出的NULL串
+.read FILENAME           执行指定文件中的SQL语句
+.schema ?TABLE?          打印创建数据库表的SQL语句
+.separator STRING        用指定的字符串代替字段分隔符
+.show                    打印所有SQLite环境变量的设置
+.quit                    退出命令行接口
+
+adb shell
+cd data/data
+cd *.db 目录
+
+sqlite3 btopp.db
+.schema
+select uri from btopp where direction='1' and mimetype='image/png' order by uri;

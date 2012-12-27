@@ -1,0 +1,152 @@
+find:
+find [path] [option]
+-name 名字
+-type 文件类型 d:文件夹 f:普通文件 l:链接文件
+-print find命令将匹配的文件输出到标准输出
+-perm 按照文件权限来查找文件 
+-exec 选项后面跟随着所要执行的命令， 然后是一对 {}， 一个空格和一个 \，最后是一个分号。
+
+遍历当前文件夹搜索contactsList字串
+grep -rn contactsList . 
+1 遍历当前文件夹 找到名字为AndroidManifest.xml的文件 
+2 以每次10个文件的数量来查找有"action\.SEND"行的文件
+3 -l 仅显示文件名 
+grep -iln "action\.SEND" $(find . -type f -name AndroidManifest.xml )
+find . -type f -name AndroidManifest.xml | xargs grep -iln "action\.SEND"
+find . -type f -name AndroidManifest.xml -exec grep -iln "action\.send" {} \;
+find . -type f -name AndroidManifest.xml | xargs -n 10 grep -iln "action\.SEND"
+
+
+grep 
+
+特殊符号	代表意义
+[:alnum:]	代表英文大小写字节及数字，亦即 0-9, A-Z, a-z
+[:alpha:]	代表任何英文大小写字节，亦即 A-Z, a-z
+[:blank:]	代表空白键与 [Tab] 按键两者
+[:cntrl:]	代表键盘上面的控制按键，亦即包括 CR, LF, Tab, Del.. 等等
+[:digit:]	代表数字而已，亦即 0-9
+[:graph:]	除了空白字节 (空白键与 [Tab] 按键) 外的其他所有按键
+[:lower:]	代表小写字节，亦即 a-z
+[:print:]	代表任何可以被列印出来的字节
+[:punct:]	代表标点符号 (punctuation symbol)，亦即：" ' ? ! ; : # $...
+[:upper:]	代表大写字节，亦即 A-Z
+[:space:]	任何会产生空白的字节，包括空白键, [Tab], CR 等等
+[:xdigit:]	代表 16 进位的数字类型，因此包括： 0-9, A-F, a-f 的数字与字节
+
+grep [-A] [-B] [--color=auto] '搜寻字串' filename
+
+选项与参数：
+-A ：后面可加数字，为 after 的意思，除了列出该行外，后续的 n 行也列出来；
+-B ：后面可加数字，为 befer 的意思，除了列出该行外，前面的 n 行也列出来；
+--color=auto 可将正确的那个撷取数据列出颜色
+
+find . -type f -name AndroidManifest.xml | grep -A3 -B2 -in --color=auto "action\.send"
+
+
+-n：显示行数 grep -n 'the' regular_express.txt
+-v：撷取相反 grep -vn 'the' regular_express.txt
+-i：忽略大小写
+-l：显示文件名
+-L：显示未撷取到的文件名
+[abc]：任意其中一个
+[^abc]：非任意其中一个
+^abc：撷取以abc开头的行
+abc$：撷取以abc结尾的行
+^$：撷取空白行 grep -v '^$' /etc/syslog.conf | grep -v '^#'
+. (小数点)：代表『一定有一个任意字节』的意思；
+* (星星号)：代表『重复前一个字节， 0 到无穷多次』的意思，为组合形态
+{}：限定连续 RE 字符范围 grep -n 'go\{2,5\}g' regular_express.txt grep -n 'go\{2,\}g' regular_express.txt
+
+RE 字符	意义与范例
+
+^word
+意义：待搜寻的字串(word)在行首！
+范例：搜寻行首为 # 开始的那一行，并列出行号
+grep -n '^#' regular_express.txt
+
+word$
+意义：待搜寻的字串(word)在行尾！
+范例：将行尾为 ! 的那一行列印出来，并列出行号
+grep -n '!$' regular_express.txt
+
+.	
+意义：代表『一定有一个任意字节』的字符！
+范例：搜寻的字串可以是 (eve) (eae) (eee) (e e)， 但不能仅有 (ee) ！亦即 e 与 e 中间『一定』仅有一个字节，而空白字节也是字节！
+grep -n 'e.e' regular_express.txt
+
+\
+意义：跳脱字符，将特殊符号的特殊意义去除！
+范例：搜寻含有单引号 ' 的那一行！
+grep -n \' regular_express.txt
+
+*
+意义：重复零个到无穷多个的前一个 RE 字符
+范例：找出含有 (es) (ess) (esss) 等等的字串，注意，因为 * 可以是 0 个，所以 es 也是符合带搜寻字串。另外，因为 * 为重复『前一个 RE 字符』的符号， 因此，在 * 之前必须要紧接著一个 RE 字符喔！例如任意字节则为 『.*』 ！
+grep -n 'ess*' regular_express.txt
+
+[list]
+意义：字节集合的 RE 字符，里面列出想要撷取的字节！
+范例：搜寻含有 (gl) 或 (gd) 的那一行，需要特别留意的是，在 [] 当中『谨代表一个待搜寻的字节』， 例如『 a[afl]y 』代表搜寻的字串可以是 aay, afy, aly 即 [afl] 代表 a 或 f 或 l 的意思！
+grep -n 'g[ld]' regular_express.txt
+
+[n1-n2]
+意义：字节集合的 RE 字符，里面列出想要撷取的字节范围！
+范例：搜寻含有任意数字的那一行！需特别留意，在字节集合 [] 中的减号 - 是有特殊意义的，他代表两个字节之间的所有连续字节！但这个连续与否与 ASCII 编码有关，因此，你的编码需要配置正确(在 bash 当中，需要确定 LANG 与 LANGUAGE 的变量是否正确！) 例如所有大写字节则为 [A-Z]
+grep -n '[A-Z]' regular_express.txt
+
+[^list]
+意义：字节集合的 RE 字符，里面列出不要的字串或范围！
+范例：搜寻的字串可以是 (oog) (ood) 但不能是 (oot) ，那个 ^ 在 [] 内时，代表的意义是『反向选择』的意思。 例如，我不要大写字节，则为 [^A-Z]。但是，需要特别注意的是，如果以 grep -n [^A-Z] regular_express.txt 来搜寻，却发现该文件内的所有行都被列出，为什么？因为这个 [^A-Z] 是『非大写字节』的意思， 因为每一行均有非大写字节，例如第一行的 "Open Source" 就有 p,e,n,o.... 等等的小写字
+grep -n 'oo[^t]' regular_express.txt
+
+\{n,m\}
+意义：连续 n 到 m 个的『前一个 RE 字符』
+意义：若为 \{n\} 则是连续 n 个的前一个 RE 字符，
+意义：若是 \{n,\} 则是连续 n 个以上的前一个 RE 字符！ 范例：在 g 与 g 之间有 2 个到 3 个的 o 存在的字串，亦即 (goog)(gooog)
+grep -n 'go\{2,3\}g' regular_express.txt
+
+egrep：grep -E
+grep -v '^$' regular_express.txt | grep -v '^#'
+egrep -v '^$|^#' regular_express.txt
+
+RE 字符	意义与范例
+
++
+意义：重复『一个或一个以上』的前一个 RE 字符
+范例：搜寻 (god) (good) (goood)... 等等的字串。 那个 o+ 代表『一个以上的 o 』所以，底下的运行成果会将第 1, 9, 13 行列出来。
+egrep -n 'go+d' regular_express.txt
+
+?	
+意义：『零个或一个』的前一个 RE 字符
+范例：搜寻 (gd) (god) 这两个字串。 那个 o? 代表『空的或 1 个 o 』所以，上面的运行成果会将第 13, 14 行列出来。 有没有发现到，这两个案例( 'go+d' 与 'go?d' )的结果集合与 'go*d' 相同？ 想想看，这是为什么喔！ ^_^
+egrep -n 'go?d' regular_express.txt
+
+|	
+意义：用或( or )的方式找出数个字串
+范例：搜寻 gd 或 good 这两个字串，注意，是『或』！ 所以，第 1,9,14 这三行都可以被列印出来喔！那如果还想要找出 dog 呢？
+egrep -n 'gd|good' regular_express.txt
+egrep -n 'gd|good|dog' regular_express.txt
+
+()	
+意义：找出『群组』字串
+范例：搜寻 (glad) 或 (good) 这两个字串，因为 g 与 d 是重复的，所以， 我就可以将 la 与 oo 列於 ( ) 当中，并以 | 来分隔开来，就可以啦！
+egrep -n 'g(la|oo)d' regular_express.txt
+
+()+	
+意义：多个重复群组的判别
+范例：将『AxyzxyzxyzxyzC』用 echo 叫出，然后再使用如下的方法搜寻一下！
+echo 'AxyzxyzxyzxyzC' | egrep 'A(xyz)+C'
+上面的例子意思是说，我要找开头是 A 结尾是 C ，中间有一个以上的 "xyz" 字串的意思～
+
+
+查找文件 
+ls -a .|grep -E ".classpath|.project"|awk '{print "mv "$1" ~" }'|sh \\or
+ls -a .|grep -E ".classpath|.project"|awk '{print $1}'|xargs -i mv {} ~
+ls -a ~|grep -E ".classpath|.project"|awk '{print "find ~ -maxdepth 1 -name "$1}'|sh|xargs -i mv {} .
+ls -a ~|grep -E ".classpath|.project"|awk '{print "find ~ -maxdepth 1 -name "$1}'|sh|xargs -i cp {} .
+ls -a .|grep -E ".classpath|.project"|awk '{print $1}'|xargs -i cp {} ~
+
+find .git/objects/ -type f|cut -d '/' -f 3-4|awk -F '/' '{print $1$2}'
+find .git/objects/ -type f|awk -F '/' '{print $3$4}'
+find .git/objects/ -type f|awk -F '/' '{print $3$4}'|git cat-file --batch-check|grep -in tag
+find .git/objects/ -type f|cut -d '/' -f 3-4|sed 's/\///g'|git cat-file --batch-check|grep -in tag
