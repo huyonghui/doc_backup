@@ -33,3 +33,5 @@ find . -depth 在某层指定目录中优先查找文件内容
 find . -maxdepth levels 在某个层次目录中按递减方式查找
 find . -perm 0755
 find . -path ./study/.git -prune -o -type f -print //排除查找目录
+find . -size +3000k 2>/dev/null|xargs -rn 1 ls -h 
+find . -size +3000k -o -empty //查找空文件和大小大于3M的文件

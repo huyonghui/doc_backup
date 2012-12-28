@@ -1,0 +1,148 @@
+linux 
+
+1 自由与开放的使用和学习环境
+2 配置需求低廉
+3 核心功能强大而稳定
+4 独立作业
+
+.         代表此层目录
+..        代表上一层目录
+-         代表前一个工作目录
+~         代表『目前使用者身份』所在的家目录
+~account  代表 account 这个使用者的家目录(account是个帐号名称)
+
+[Ctrl] + [Alt] + [F1] ~ [F6]  ：文字接口登陆 tty1 ~ tty6 终端机；
+[Ctrl] + [Alt] + [F7]   ：图形接口壁纸。
+
+man -f ls 
+whatis ls //看一下命令是干嘛的
+
+type ls
+which ls //查找命令文档位置
+whereis file //查找文件位置
+
+【cal】
+cal -3 显示3个月的日程，前中后
+cal -y 显示年历
+cal -h 不显示高亮条
+cal -j 显示目前多少天
+cal -A 2 —B 3 显示前面3个月和后面2个月
+
+【bc】
+一般情况下，我们使用不带任何参数的bc命令。
+bc
+如果需要bc不输出提示信息，可以加上-q参数：
+bc -q
+如果要使用强大的数学库，比如计算三角函数，需要加上-l参数：
+bc -l
+MATH LIBRARY 
+       If bc is invoked with the -l option, a math library is preloaded and the default  scale  is  set  to  20. 
+       The  math  functions  will  calculate their results to the scale set at the time of their call.  The math 
+       library defines the following functions: 
+
+       s (x)  The sine of x, x is in radians.    正玄函数 
+
+       c (x)  The cosine of x, x is in radians.  余玄函数 
+
+       a (x)  The arctangent of x, arctangent returns radians. 反正切函数 
+
+       l (x)  The natural logarithm of x.  log函数(以2为底) 
+
+       e (x)  The exponential function of raising e to the value x.  e的指数函数 
+
+       j (n,x) 
+              The bessel function of integer order n of x.   贝塞尔函数 
+
+//不输出显示信息
+bc -q
+
+//管道
+echo "scale=7; 355/113" | bc
+
+//从文件读入
+cat test.txt
+3*2              
+bc test.txt
+6
+
+echo "obase=16;ibase=10;100" | bc // 进制转换              
+echo "scale=10; a(1)*4" | bc -l //圆周率
+
+basename 
+dirname
+
+cat [-AbEnTv]
+选项与参数：
+-A  ：相当於 -vET 的整合选项，可列出一些特殊字符而不是空白而已；
+-b  ：列出行号，仅针对非空白行做行号显示，空白行不标行号！
+-E  ：将结尾的断行字节 $ 显示出来；
+-n  ：列印出行号，连同空白行也会有行号，与 -b 的选项不同；
+-T  ：将 [tab] 按键以 ^I 显示出来；
+-v  ：列出一些看不出来的特殊字符
+tac
+
+nl [-bnw] 文件
+选项与参数：
+-b  ：指定行号指定的方式，主要有两种：
+      -b a ：表示不论是否为空行，也同样列出行号(类似 cat -n)；
+      -b t ：如果有空行，空的那一行不要列出行号(默认值)；
+-n  ：列出行号表示的方法，主要有三种：
+      -n ln ：行号在萤幕的最左方显示；
+      -n rn ：行号在自己栏位的最右方显示，且不加 0 ；
+      -n rz ：行号在自己栏位的最右方显示，且加 0 ；
+-w  ：行号栏位的占用的位数。
+
+more
+空白键 (space)：代表向下翻一页；
+Enter         ：代表向下翻『一行』；
+/字串         ：代表在这个显示的内容当中，向下搜寻『字串』这个关键字；
+:f            ：立刻显示出档名以及目前显示的行数；
+q             ：代表立刻离开 more ，不再显示该文件内容。
+b 或 [ctrl]-b ：代表往回翻页，不过这动作只对文件有用，对管线无用。
+
+less
+空白键    ：向下翻动一页；
+[pagedown]：向下翻动一页；
+[pageup]  ：向上翻动一页；
+/字串     ：向下搜寻『字串』的功能；
+?字串     ：向上搜寻『字串』的功能；
+n         ：重复前一个搜寻 (与 / 或 ? 有关！)
+N         ：反向的重复前一个搜寻 (与 / 或 ? 有关！)
+q         ：离开 less 这个程序
+
+head
+head -n 20 file 查看前20行 (默认10行)
+head -n -20 file 不显示后面20行
+
+tail
+tail -n 20 file 查看后20行 (默认10行)
+tail -n +20 file 不显示前面20行
+
+touch 
+创建空白文件
+修改文档时间
+
+umask - set file mode creation mask
+配置隐藏属性：
+chattr [+-=][ASacdistu] 文件或目录名称
+选项与参数：
++   ：添加某一个特殊参数，其他原本存在参数则不动。
+-   ：移除某一个特殊参数，其他原本存在参数则不动。
+=   ：配置一定，且仅有后面接的参数
+
+A  ：当配置了 A 这个属性时，若你有存取此文件(或目录)时，他的存取时间 atime
+     将不会被修改，可避免I/O较慢的机器过度的存取磁碟。这对速度较慢的计算机有帮助
+S  ：一般文件是非同步写入磁碟的(原理请参考第五章sync的说明)，如果加上 S 这个
+     属性时，当你进行任何文件的修改，该更动会『同步』写入磁碟中。
+a  ：当配置 a 之后，这个文件将只能添加数据，而不能删除也不能修改数据，只有root 
+     才能配置这个属性。 
+c  ：这个属性配置之后，将会自动的将此文件『压缩』，在读取的时候将会自动解压缩，
+     但是在储存的时候，将会先进行压缩后再储存(看来对於大文件似乎蛮有用的！)
+d  ：当 dump 程序被运行的时候，配置 d 属性将可使该文件(或目录)不会被 dump 备份
+i  ：这个 i 可就很厉害了！他可以让一个文件『不能被删除、改名、配置连结也无法
+     写入或新增数据！』对於系统安全性有相当大的助益！只有 root 能配置此属性
+s  ：当文件配置了 s 属性时，如果这个文件被删除，他将会被完全的移除出这个硬盘
+     空间，所以如果误删了，完全无法救回来了喔！
+u  ：与 s 相反的，当使用 u 来配置文件时，如果该文件被删除了，则数据内容其实还
+     存在磁碟中，可以使用来救援该文件喔！
+注意：属性配置常见的是 a 与 i 的配置值，而且很多配置值必须要身为 root 才能配置
