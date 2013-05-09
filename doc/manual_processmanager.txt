@@ -1,0 +1,41 @@
+ps			# process status 
+ps aux		# show all effective user's detail process status
+
+top			# show process status dynamic 
+top -d 2	# show and update every 2 seconds default 5s
+top -b -n 2 > ~/ps.top	# save 2times top message to file
+top -d 2 -p PID			# show the given pid process dynamic
+
+kill
+
+kill -signal PID
+SIGHUP		# reboot process
+SIGINT		# interrupt process "ctrl + c"
+SIGKILL		# interrupt process inforce
+SIGTERM		# stop process in normal
+SIGSTOP		# handup process "ctrl + z"
+
+killall
+killall -9 COMMAND # kill COMMAND process inforce
+
+free		# show system memory status
+free [-b|k|m|g] [-t]
+
+uname		# show message about system and kernel
+uname -a
+
+uptime		# show  time already from boot and workload 
+
+netstat		# net status for net monitor
+
+dmesg		# diagnostic message, about kernel message
+
+vmstat		# report virtual memory statistics
+vmstat 1 3	# report 3 times and update every seconds
+
+df			# report file system disk space usage
+df -lh		# report file system disk space available
+
+du			# estimate file space usage	
+du -sm PATH	# report used space of PATH with M as unit
+

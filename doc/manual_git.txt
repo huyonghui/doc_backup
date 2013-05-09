@@ -186,3 +186,10 @@ git checkout folder1 更新文件夹 放弃所有修改
 git archive -v HEAD | (cd ../linux-HEAD/ && tar xf -)
 打包
 git archive -v --format=tar v3.0 | bzip2 >../git-3.0.tar.bz2
+
+# for backup modified file which don't want to upload
+git stash 
+git stash list
+git stash pop
+git stash apply stash@{1}
+git stash clear

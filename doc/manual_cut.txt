@@ -1,0 +1,9 @@
+cut	# remove sections from each line of files
+	-b	# select only these bytes
+	eg: who | cut -b 3-5,8
+	-c	# select only these characters
+	eg: who | cut -c 3-5,8
+	-d	# use new delimiter instead of TAB
+	-f	# select only these fields.
+	eg: who | cut -d ' ' -f 3,5
+
