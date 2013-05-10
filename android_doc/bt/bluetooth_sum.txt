@@ -1,0 +1,143 @@
+driver:	./kernel/drivers/net/wireless/bcmdhd
+nv: ./hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/bcmdhd_26MHz.cal
+fireware: ./hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/
+		fw_bcm4330_apsta_b2.bin
+		fw_bcm4330_p2p_b2.bin
+		fw_bcm4330_b2.bin
+ 
+./device/sprd/sp8825ea/base.mk
+	$(call inherit-product, device/sprd/partner/brcm/device-bcm-wlan-b2-sdio.mk)
+
+./device/sprd/partner/brcm/device-bcm-wlan-b2-sdio.mk
+			BOARD_WLAN_DEVICE_REV        := bcm4330_b2
+			BOARD_BCMDEV_CLK_REV :=
+	$(call inherit-product, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm-sdio.mk)
+
+./hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm-sdio.mk
+firmware:   BOARD_WLAN_DEVICE_REV := bcm4330_b2  
+			ifeq ($(BOARD_WLAN_DEVICE_REV),bcm4330_b1)
+				BCM_FW_SRC_FILE_STA := fw_bcm4330_b1.bin
+				BCM_FW_SRC_FILE_AP  := fw_bcm4330_apsta_b1.bin
+				BCM_FW_SRC_FILE_P2P := fw_bcm4330_apsta_b1.bin
+			else
+				BCM_FW_SRC_FILE_STA := fw_bcm4330_b2.bin
+				BCM_FW_SRC_FILE_AP  := fw_bcm4330_apsta_b2.bin
+				BCM_FW_SRC_FILE_P2P := fw_bcm4330_p2p_b2.bin
+				BCM_FW_SRC_FILE_EUT := sdio-g-mfgtest.bin
+			endif
+
+nv : bcmdhd_26MHz_sdio.ca
+     ifeq ($(BOARD_BCMDEV_CLK_REV),bcm4330_37p4MHz)
+		PRODUCT_COPY_FILES += \
+    		hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/bcmdhd_37p4MHz.cal:system/etc/wifi/bcmdhd.cal \
+    		hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/bcm4330_37p4MHz.hcd:system/bin/bcm4330.hcd
+		else
+
+		PRODUCT_COPY_FILES += \
+   			hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/bcmdhd_26MHz_sdio.cal:system/etc/wifi/bcmdhd.cal \
+    		hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/bcm4330_26MHz.hcd:system/bin/bcm4330.hcd
+		endif
+
+
+[BluetoothAdapterStateMachine.java]
+/**
+ * Bluetooth Adapter StateMachine
+ * All the states are at the same level, ie, no hierarchy.
+ *                         (BluetootOn)<----------------------<-
+ *                           |    ^    -------------------->-  |
+ *                           |    |                         |  |
+ *                 TURN_OFF  |    | SCAN_MODE_CHANGED    m1 |  | USER_TURN_ON
+ *         AIRPLANE_MODE_ON  |    |                         |  |
+ *                           V    |                         |  |
+ *                         (Switching)                   (PerProcessState)
+ *                           |    ^                         |  |
+ *     POWER_STATE_CHANGED & |    | TURN_ON(_CONTINUE)      |  |
+ * ALL_DEVICES_DISCONNECTED  |    |                     m2  |  |
+ *                           V    |------------------------<   | SCAN_MODE_CHANGED
+ *                          (HotOff)-------------------------->- PER_PROCESS_TURN_ON
+ *                           /    ^
+ *                          /     |  SERVICE_RECORD_LOADED
+ *                         |      |
+ *              TURN_COLD  |   (Warmup)
+ *                         \      ^
+ *                          \     |  TURN_HOT/TURN_ON
+ *                           |    |  AIRPLANE_MODE_OFF(when Bluetooth was on before)
+ *                           V    |
+ *                           (PowerOff)   <----- initial state
+ *
+ * Legend:
+ * m1 = TURN_HOT
+ * m2 = Transition to HotOff when number of process wanting BT on is 0.
+ *      POWER_STATE_CHANGED will make the transition.
+ */
+
+	1 PowerOff: initial state.Bluetooth module's power is off, firmware is not loaded.
+	2 WarmUp: Turning on Bluetooth module's power, loading firmware, starting event loop thread to listen on Bluetooth module event changes.
+	3 HotOff: Bluetooth Module has powered, firmware loaded, event loop started,SDP loaded, but the modules stays non-discoverable and non-connectable.
+	4 Switching: switching state, need further command.
+	5 BluetoothOn: working normal.
+
+[android_server_BluetoothEventLoop.cpp]: get signal from org.bluez.Adapter.
+	1 we get a DeviceFound signal every time RSSI changes or name changes.
+
+[Start Bluetooth Service]
+	SystemServer.java: run()
+		----> bluetooth = new BluetoothService(context);
+      	 	ServiceManager.addService(BluetoothAdapter.BLUETOOTH_SERVICE, bluetooth);
+      		bluetooth.initAfterRegistration(); // to init BluetoothAdapter BluetoothAdapterStateMachine BluetoothEventLoop
+      		bluetoothA2dp = new BluetoothA2dpService(context, bluetooth);
+      		ServiceManager.addService(BluetoothA2dpService.BLUETOOTH_A2DP_SERVICE, bluetoothA2dp);
+      		bluetooth.initAfterA2dpRegistration();
+					----> BluetoothService.java: initAfterRegistration();
+				  			----> BluetoothAdapterStateMachine.java // PowerOff: TURN_HOT  			
+					----> BluetoothService.java: initAfterA2dpRegistration(); // to get BluetoothA2dp service
+								----> mEventLoop.getProfileProxy();
+											----> mAdapter.getProfileProxy(, ,BluetoothProfile.A2DP);
+														----> a2dp = new BluetoothA2dp(context, listener);
+              							----> mServiceListener.onServiceConnected(BluetoothProfile.A2DP,);
+                    							----> mService = (BluetoothA2dp) proxy;
+              				----> mAdapter.getProfileProxy(, ,BluetoothProfile. INPUT_DEVICE);
+                  					----> iDev = new BluetoothInputDevice(context, listener);
+
+[enable]
+	BluetoothSetting.java 
+		----> BluetoothEnabler.java( onCheckedChanged() )
+ 		----> LocalBlutoothAdapter.java ( setBluetoothEnable() )
+		----> BluetoothAdapter.java( enable())
+		----> IBluetooth.aidl( enable() )
+		----> BluetoothService.java( enable() ) // send message: BluetoothAdapterStateMachine.USER_TURN_ON
+		----> BluetoothAdapterStateMachine.java( enableNative() )
+		----> android_server_BluetoothService.cpp
+		
+[Scan]
+	BluetoothSetting.java( startScanning() )
+		----> LocalBlutoothAdapter.java( startScanning() )
+		----> IBluetooth.aidl( startDiscovery() )
+		----> BluetoothService.java( startDiscovery() )
+		----> android_server_BluetoothService.cpp( startDiscoveryNative )
+		
+[Scan Result]
+	android_server_BluetoothEventLoop.cpp( event_filter() ) // "DeviceFound" signal from org.bluez.Adapter
+		----> BluetoothEventLoop.java( onDeviceFound() )
+		----> BluetoothEventLoop.java( addDevice() )
+		----> BluetoothDeviceProperties.java( addProperties() ) // keep Property in HashMap<String, Map<String, String>> 
+		----> BluetoothService.java( updateDeviceServiceChannelCache() ) // keep uuidToChannelMap in HashMap<String, Map<ParcelUuid, Integer>>
+					----> BluetoothService.java( getDeviceServiceChannelForUuid() )
+					----> android_server_BluetoothEventLoop.cpp( getDeviceServiceChannelNative() )
+		----> BluetoothEventLoop.java( addDevice() ) // sendBroadcast BluetoothDevice.ACTION_FOUND
+		----> BluetoothEventManager.java( class DeviceFoundHandler.onReceive() )
+		----> BluetoothEventManager.java( addDevice() ) // ArrayList<CachedBluetoothDevice>
+					----> BluetoothEventManager.java( dispatchDeviceAdded() )
+					----> DeviceListPreferenceFragment.java( onDeviceAdded() ) // mLocalManager.getEventManager().registerCallback(this);
+								----> DeviceListPreferenceFragment.java( createDevicePreference() )
+					----> BluetoothEventManager.java( cachedDevice.setRssi() )
+								----> CachedBluetoothDevice.java( dispatchAttributesChanged() )
+								----> BluetoothDevicePreference.java/DeviceListPreferenceFragment.java( dispatchAttributesChanged() )
+											----> BluetoothDevicePreference.java( compareTo() )
+											----> CachedBluetoothDevice.java( compareTo() )
+								.
+								.
+								.
+
+[Paring]
+
