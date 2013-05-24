@@ -140,4 +140,10 @@ nv : bcmdhd_26MHz_sdio.ca
 								.
 
 [Paring]
-
+	master:	to pare or connect disconnect 
+		----> DeviceListPreferenceFragment.java( onPreferenceTreeClick() )
+		----> DeviceListPreferenceFragment.java(onDevicePreferenceClick() )
+		----> BluetoothDevicePreference.java( onClicked() )
+	
+	slave: to accept or cancel request
+		----> BluetoothPairingRequest.java(  onReceive(): BluetoothDevice.ACTION_PAIRING_REQUEST )
