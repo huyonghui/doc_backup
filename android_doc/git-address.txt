@@ -1,0 +1,5 @@
+git@192.168.1.9:tiger.git //origin/T8601A
+git@192.168.1.9:8810cmcc-new.git //origin/t8392a
+git@192.168.1.9:tiger-mp.git //origin/t8601a-mp
+git@192.168.1.9:tiger-2.3.5.git //origin/T8620A
+git@192.168.1.9:ali_os_cmcc.git //origin/T8602A
