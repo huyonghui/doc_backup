@@ -8,7 +8,7 @@ export PATH
 
 count=1
 
-cat rmlaiji.sh | while read line        
+cat mms.patch | while read line        
 
 do
 

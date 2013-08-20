@@ -49,7 +49,7 @@ $: cat .git/config
 [branch "product"]
 	remote = s
 	merge = refs/heads/product
-我的全局配置[2010-10-22]
+
 $: cat ~/.gitconfig
 [user]
 	name = yyfrankyy
